@@ -8,37 +8,56 @@ Train::Train() {
 }
 
 void Train::addCar(bool light) {
-  Car* Car_new = new Car{light, nullptr, nullptr};
-  if (first == nullptr) {
-    Car_new->next = Car_new;
-    Car_new->prev = Car_new;
-    first = Car_new;
-  } else {
-    Car* tail = first->prev;
-    Car_new->next = first;
-    Car_new->prev = tail;
-    tail->next = Car_new;
-    first->prev = Car_new;
+  Car* newCar = new Car {light, nullptr, nullptr};
+  if (!first) {
+    first = newCar;
+    newCar->next = newCar;
+    newCar->prev = newCar;
+    } else {
+      Car* tail = first->prev;
+      newCar->next = first;
+      newCar->prev = tail;
+      first->prev = newCar;
+      tail->next = newCar;
+      first = newCar;
   }
 }
 
 int Train::getLength() {
+  if (!first) return 0;
+  if (first->next == first) return 1;
   countOp = 0;
+  Car* current = first;
+  int countOfCars = 1;
+  if (!current->light)
+    current->light = true;
+  current = current->next;
+  countOp += 2;
+  while (!current->light) {
+    current = current->next;
+    countOp += 2;
+    countOfCars++;
+  }
+  current->light = false;
+  if (!first->light) {
+    return countOfCars;
+  }
   while (true) {
-    Car* current = first;
-    uint16_t lengthEstimate = 1;
-    if (!current->light)
+    current = first;
+    countOfCars = 1;
+    if (!current->light) {
       current->light = true;
+    }
     current = current->next;
     countOp += 2;
     while (!current->light) {
       current = current->next;
       countOp += 2;
-      ++lengthEstimate;
+      countOfCars++;
     }
     current->light = false;
     if (!first->light)
-      return lengthEstimate;
+      return countOfCars;
   }
 }
 
